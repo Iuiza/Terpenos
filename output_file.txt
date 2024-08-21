@@ -1,0 +1,8 @@
+Sequence:KAH7880485.1	Prediction:nontransporter
+Sequence:KAH7879344.1	Prediction:nontransporter
+Sequence:KAH7878046.1	Prediction:nontransporter
+Sequence:KAH7874848.1	Prediction:nontransporter
+Sequence:KAH7873433.1	Prediction:nontransporter
+Sequence:KAH7872026.1	Prediction:nontransporter
+Sequence:KAH7870383.1	Prediction:nontransporter
+Sequence:KAH7868475	Prediction:nontransporter
