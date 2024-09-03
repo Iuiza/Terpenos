@@ -39,7 +39,7 @@ class ProteinDataset(Dataset):
         }
 
 # Load your data
-df = pd.read_csv('terpene_dataset.csv')
+df = pd.read_csv('dataset_terpenos.csv')
 
 # Split into sequences and labels
 sequences = df['sequence'].values
