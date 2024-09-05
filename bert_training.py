@@ -1,12 +1,7 @@
-from transformers import BertTokenizer, BertForSequenceClassification, Trainer, TrainingArguments
-from torch.utils.data import Dataset, DataLoader
 import torch
 import pandas as pd
-import numpy as np
-from sklearn.linear_model import LogisticRegression
-from sklearn.model_selection import train_test_split
-from sklearn.metrics import accuracy_score
-import joblib
+from transformers import BertTokenizer, BertForSequenceClassification, Trainer, TrainingArguments
+from torch.utils.data import Dataset, DataLoader
 
 class ProteinDataset(Dataset):
     def __init__(self, sequences, labels, tokenizer, max_length):
@@ -99,74 +94,3 @@ trainer.train()
 # Save the fine-tuned model
 model.save_pretrained('./terpene_model')
 tokenizer.save_pretrained('./terpene_model')
-
-# def extract_embeddings(model, tokenizer, sequences, max_length=512):
-#     embeddings = []
-#     model.eval()
-#     # with torch.no_grad():
-#     for sequence in sequences:
-#         # sequence = ' '.join(sequence)
-#         # tokenized_sequence = tokenizer.encode_plus(sequence, add_special_tokens=True, max_length=max_length, truncation=True)
-#         # input_ids = torch.tensor([tokenized_sequence['input_ids']]).to(device)
-#         # attention_mask = torch.tensor([tokenized_sequence['attention_mask']]).to(device)
-
-#         # last_hidden_states = model(input_ids, attention_mask=attention_mask)[0]
-#         # seq_len = (attention_mask[0] == 1).sum()
-#         # seq_embedding = last_hidden_states[0][1:seq_len-1].cpu().numpy()
-#         # mean_pool = np.mean(seq_embedding, axis=0)
-
-#         # embeddings.append(mean_pool)
-
-#         sequence = ' '.join(sequence)
-#         sequence = sequence.replace('U', 'X')
-#         sequence = sequence.replace('O', 'X')
-#         sequence = sequence.replace('B', 'X')
-#         sequence = sequence.replace('Z', 'X')
-
-#         tokenized_sequence = tokenizer.encode_plus(sequence, add_special_tokens=True, max_length=20000, truncation=True)
-#         input_ids = torch.tensor([tokenized_sequence['input_ids']]).to(device)
-#         attention_mask = torch.tensor([tokenized_sequence['attention_mask']]).to(device)
-
-#         with torch.no_grad():
-#             last_hidden_states = model(input_ids, attention_mask=attention_mask)[0]
-
-#         embedding = last_hidden_states[0].cpu().numpy()
-#         seq_len = (attention_mask[0] == 1).sum()
-#         seq_embedding = embedding[1:seq_len-1]
-#         mean_pool = np.mean(seq_embedding, axis=0)
-
-#         embeddings.append(mean_pool)
-
-#     return np.array(embeddings)
-
-
-
-
-# # Extract embeddings
-# embeddings = extract_embeddings(model, tokenizer, sequences)
-# print(embeddings.shape)
-
-# # Train/test split
-# X_train, X_test, y_train, y_test = train_test_split(embeddings, labels, test_size=0.2, random_state=42)
-
-# print(X_train.shape)  # Expected: (n_samples, 1024)
-# print(X_test.shape)   # Expected: (n_samples, 1024)
-
-# # Reshape X_train and X_test correctly to 2D arrays
-# X_train = X_train.reshape(X_train.shape[0], -1)
-# X_test = X_test.reshape(X_test.shape[0], -1)
-
-# print(X_train.shape)  # Expected: (n_samples, 1024)
-# print(X_test.shape)   # Expected: (n_samples, 1024)
-
-# # Train logistic regression
-# lr = LogisticRegression(max_iter=1000)
-# lr.fit(X_train, y_train)
-
-# # Evaluate
-# y_pred = lr.predict(X_test)
-# accuracy = accuracy_score(y_test, y_pred)
-# print(f'Accuracy: {accuracy:.4f}')
-
-# # Save the model
-# joblib.dump(lr, 'terpene_lr_model.pkl')
