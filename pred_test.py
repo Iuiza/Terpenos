@@ -10,6 +10,7 @@ import torch
 import numpy as np
 from transformers import BertTokenizer, BertModel
 import joblib
+from sklearn.metrics import accuracy_score
 
 device = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
 
@@ -32,7 +33,6 @@ with open(args.input_file, 'r') as f:
 
 # Load the ProtBert model and tokenizer
 print('Loading ProtBert model and tokenizer...')
-# tokenizer = BertTokenizer.from_pretrained('./terpene_model')
 tokenizer = BertTokenizer.from_pretrained('rostlab/prot_bert_bfd', do_lower_case=False)
 model = BertModel.from_pretrained('./terpene_model')
 model.to(device)
@@ -43,8 +43,8 @@ lr = joblib.load('terpene_lr_model.pkl')
 
 # For each sequence, tokenize it and pass it through the ProtBert model.
 predictions = []
-print("Sequence ID\t\tPredicted label")
-print("------------\t\t---------------")
+print("Sequence ID\t\tPredicted label\t\tConfidence")
+print("------------\t\t---------------\t\t----------")
 for sequence, id in sequences_ids:
     sequence = ' '.join(sequence)
     sequence = sequence.replace('U', 'X')
@@ -64,12 +64,15 @@ for sequence, id in sequences_ids:
     seq_embedding = embedding[1:seq_len-1]
     mean_pool = np.mean(seq_embedding, axis=0)
 
-    # Predict the label
+    # Predict the label and the confidence
+    probabilities = lr.predict_proba([mean_pool])
     prediction = lr.predict([mean_pool])
-    predictions.append(f"Sequence:{id}\tPrediction:{prediction[0]}")
+    confidence = max(probabilities[0])  # Maximum probability corresponds to the predicted label's confidence
 
-    # Print the id and the prediction
-    print(f"{id}\t{prediction[0]}")
+    predictions.append(f"Sequence:{id}\tPrediction:{prediction[0]}\tConfidence:{confidence:.4f}")
+
+    # Print the id, the prediction, and the confidence
+    print(f"{id}\t{prediction[0]}\t{confidence:.4f}")
 
 # Write the output to the output file
 with open(args.output_file, 'w') as f:
